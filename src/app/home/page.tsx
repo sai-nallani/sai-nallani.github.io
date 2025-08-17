@@ -3,10 +3,9 @@ import { AboutSection } from '@/components/AboutSection';
 import { BlogSection } from '@/components/BlogSection';
 import { ContactSection } from '@/components/ContactSection';
 
-// Root page now directly renders all sections for static export (no redirect needed)
 export const dynamic = 'force-static';
 
-export default function RootPage() {
+export default function HomeComposite() {
   return (
     <>
       <Hero />

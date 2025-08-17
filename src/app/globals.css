@@ -1,4 +1,17 @@
 @import "tailwindcss";
+@import 'katex/dist/katex.min.css';
+
+@font-face {
+  font-family: 'CMU Sans Serif';
+  src: url('/fonts/cmun_sanserif.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+html {
+  scroll-behavior: smooth;
+}
 
 :root {
   --background: #ffffff;
@@ -22,5 +35,36 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: 'CMU Sans Serif', Arial, Helvetica, sans-serif;
 }
+
+/* Link highlighting */
+article.prose a,
+.prose a {
+  position: relative;
+  color: #2563eb; /* blue-600 */
+  text-decoration: none;
+  font-weight: 500;
+}
+.dark .prose a {
+  color: #60a5fa; /* blue-400 */
+}
+.prose a::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -1px;
+  width: 100%;
+  height: 2px;
+  background: currentColor;
+  opacity: 0.25;
+  transform: scaleX(0.2);
+  transform-origin: left;
+  transition: opacity .2s ease, transform .25s ease;
+}
+.prose a:hover::after,
+.prose a:focus-visible::after {
+  opacity: 0.6;
+  transform: scaleX(1);
+}
+.prose a:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
