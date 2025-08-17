@@ -1,3 +1,3 @@
 personal website!!!
 
-[go here :](https://www.sai-nallani.github.io/)
+[go here :)](https://sai-nallani.github.io/)
