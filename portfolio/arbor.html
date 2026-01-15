@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Arbor - A visual thinking tool with AI-powered branching conversations">
+    <title>Arbor — Sai Nallani</title>
+    <link rel="icon" type="image/x-icon" href="../public/favicon.ico">
+    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        .container {
+            max-width: 1200px;
+        }
+
+        .project-hero {
+            padding: var(--space-xl) 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: var(--space-xl);
+        }
+
+        .project-hero h1 {
+            margin-bottom: var(--space-sm);
+        }
+
+        .project-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .project-meta span {
+            font-size: 0.8rem;
+            padding: 6px 14px;
+            background: var(--bg-secondary);
+            border-radius: 20px;
+            color: var(--text-secondary);
+        }
+
+        .project-links {
+            display: flex;
+            gap: var(--space-sm);
+            margin-top: var(--space-md);
+        }
+
+        .project-links a {
+            font-size: 0.875rem;
+            padding: 10px 20px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            transition: all var(--transition-fast);
+        }
+
+        .project-links a:hover {
+            border-color: var(--accent);
+            background: var(--bg-secondary);
+        }
+
+        .project-links a.primary {
+            background: var(--text-primary);
+            color: var(--bg-primary);
+            border-color: var(--text-primary);
+        }
+
+        .project-links a.primary:hover {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .project-section {
+            margin-bottom: var(--space-xl);
+        }
+
+        .project-section h2 {
+            font-size: 1.5rem;
+            margin-top: var(--space-lg);
+            margin-bottom: var(--space-sm);
+        }
+
+        .project-section h2:first-child {
+            margin-top: 0;
+        }
+
+        .project-section p {
+            margin-bottom: var(--space-md);
+        }
+
+        .project-section ul {
+            list-style: none;
+            padding: 0;
+            margin-bottom: var(--space-md);
+        }
+
+        .project-section li {
+            padding: 4px 0;
+            color: var(--text-secondary);
+            padding-left: var(--space-md);
+            position: relative;
+        }
+
+        .project-section li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+        }
+
+        .project-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-xl);
+            align-items: start;
+        }
+
+        .project-grid img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            cursor: pointer;
+            transition: opacity var(--transition-fast);
+        }
+
+        .project-grid img:hover {
+            opacity: 0.9;
+        }
+
+        .project-image {
+            position: relative;
+            border-radius: 8px;
+        }
+
+        .click-hint {
+            position: absolute;
+            bottom: var(--space-sm);
+            right: var(--space-sm);
+            font-size: 0.75rem;
+            color: var(--bg-primary);
+            background: rgba(0, 0, 0, 0.5);
+            padding: 4px 8px;
+            border-radius: 4px;
+            pointer-events: none;
+        }
+
+        /* Lightbox overlay */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            cursor: zoom-out;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox img {
+            max-width: 95%;
+            max-height: 95%;
+            border-radius: 8px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: var(--space-md);
+            right: var(--space-md);
+            color: white;
+            font-size: 2rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: opacity var(--transition-fast);
+        }
+
+        .lightbox-close:hover {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page">
+        <div class="container">
+            <section class="project-hero fade-in" style="padding-top: var(--space-lg);">
+                <a href="../portfolio.html" class="back-link"
+                    style="margin-bottom: var(--space-lg); display: inline-block;">← Portfolio</a>
+                <h1>Arbor</h1>
+                <p>A visual thinking and brainstorming tool with AI-powered branching conversations.</p>
+                <div class="project-meta">
+                    <span>Next.js</span>
+                    <span>TypeScript</span>
+                    <span>React Flow</span>
+                    <span>AI</span>
+                </div>
+                <div class="project-links">
+                    <a target="_blank" href="https://www.arbor.ink" class="primary">Live Demo</a>
+                    <a target="_blank" href="https://github.com/sai-nallani/arbor">GitHub</a>
+                </div>
+            </section>
+
+            <section class="project-section fade-in fade-in-delay-1">
+                <div class="project-grid">
+                    <div class="project-content">
+                        <h2>Overview</h2>
+                        <p>Arbor is a canvas-based application that enables non-linear exploration of ideas through
+                            AI-assisted
+                            conversations. Unlike traditional chat interfaces, Arbor lets you branch, fork, and visually
+                            connect
+                            multiple conversation threads.</p>
+
+                        <h2>Features</h2>
+                        <ul>
+                            <li>Infinite canvas for visual brainstorming</li>
+                            <li>AI-powered chat blocks with context awareness</li>
+                            <li>Branch conversations from any message</li>
+                            <li>Connect related ideas with visual links</li>
+                            <li>Sticky notes for annotations</li>
+                            <li>Persistent workspaces</li>
+                        </ul>
+
+                        <h2>Technical Details</h2>
+                        <p>Built with Next.js and TypeScript. Uses React Flow for the canvas implementation and
+                            integrates
+                            with OpenAI's API for conversational AI. Data persistence handled through Supabase
+                            and Prisma ORM.</p>
+                    </div>
+                    <div class="project-image">
+                        <img src="../public/arbor-screenshot.png"
+                            alt="Arbor interface showing AI-powered branching conversations" id="zoomable-img">
+                        <span class="click-hint">Click to enlarge</span>
+                    </div>
+                </div>
+            </section>
+
+
+        </div>
+    </main>
+
+    <!-- Lightbox overlay -->
+    <div class="lightbox" id="lightbox">
+        <span class="lightbox-close">&times;</span>
+        <img src="../public/arbor-screenshot.png" alt="Arbor interface">
+    </div>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Lightbox functionality
+        const lightbox = document.getElementById('lightbox');
+        const zoomableImg = document.getElementById('zoomable-img');
+        const closeBtn = lightbox.querySelector('.lightbox-close');
+
+        zoomableImg.addEventListener('click', () => {
+            lightbox.classList.add('active');
+        });
+
+        lightbox.addEventListener('click', () => {
+            lightbox.classList.remove('active');
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                lightbox.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+
+</html>

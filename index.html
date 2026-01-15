@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Sai Nallani - Personal website">
+    <title>Sai Nallani</title>
+    <link rel="icon" type="image/x-icon" href="public/favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .card-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-lg);
+        }
+
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: var(--space-xl);
+            max-width: 700px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        .card__header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-lg);
+        }
+
+        .card__name {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            font-weight: 400;
+            margin: 0;
+        }
+
+        .card__social {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .card__social a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: 1px solid var(--border);
+            border-radius: 50%;
+            color: var(--text-secondary);
+            transition: all var(--transition-base);
+        }
+
+        .card__social a:hover {
+            border-color: var(--accent);
+            color: var(--accent-hover);
+        }
+
+        .card__social svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .card__content {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: var(--space-lg);
+            align-items: start;
+        }
+
+        .card__bio p {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: var(--space-md);
+        }
+
+        /* 1266*1920 is Profile Picture Size */
+        .card__image {
+            width: 150px;
+            height: 150px;
+            border-radius: 8px;
+            background: var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            overflow: hidden;
+        }
+
+        .card__image img {
+            padding-top: 70%;
+            width: 160%;
+            /* height: 200%; */
+            object-fit: cover;
+            object-position: 20% 80%;
+            border-radius: 8px;
+        }
+
+        .card__nav {
+            display: flex;
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--border);
+        }
+
+        .card__nav a {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .card__nav a:hover {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 600px) {
+            .card__content {
+                grid-template-columns: 1fr;
+            }
+
+            .card__image {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <main class="page card-container">
+        <div class="card">
+            <header class="card__header">
+                <h1 class="card__name">Sai Nallani</h1>
+                <div class="card__social">
+                    <a href="https://github.com/sai-nallani" target="_blank" rel="noopener noreferrer"
+                        aria-label="GitHub">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22" />
+                        </svg>
+                    </a>
+                    <a href="https://www.linkedin.com/in/sai-nallani-6a5061262/" target="_blank"
+                        rel="noopener noreferrer" aria-label="LinkedIn">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                            <rect x="2" y="9" width="4" height="12" />
+                            <circle cx="4" cy="4" r="2" />
+                        </svg>
+                    </a>
+                    <a href="https://x.com/nchsai1" target="_blank" rel="noopener noreferrer" aria-label="X">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4l11.733 16h4.267l-11.733 -16z" />
+                            <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
+                        </svg>
+                    </a>
+                    <a href="mailto:sainallani@princeton.edu" aria-label="Email">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="2" y="4" width="20" height="16" rx="2" />
+                            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                        </svg>
+                    </a>
+                </div>
+            </header>
+
+            <div class="card__content">
+                <div class="card__bio">
+                    <p>
+                        I'm a Freshman at Princeton University, majoring in CS and Math.
+                        I'm interested in optimization, interpretability, robotics, and reinforcement learning.
+                    </p>
+                </div>
+                <div class="card__image">
+                    <img src="public/picture.JPG" alt="Sai Nallani">
+                </div>
+            </div>
+
+            <nav class="card__nav">
+                <a href="portfolio.html">Portfolio</a>
+                <a href="blog.html">Blog</a>
+                <a href="courses.html">Courses</a>
+            </nav>
+        </div>
+    </main>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
