@@ -1,0 +1,86 @@
+{
+  "projects": [
+    {
+      "slug": "arbor",
+      "title": "Arbor",
+      "tagline": "A visual thinking and brainstorming tool with AI-powered branching conversations.",
+      "tags": ["Next.js", "TypeScript", "React Flow", "AI"],
+      "links": {
+        "live": "https://www.arbor.ink",
+        "github": "https://github.com/sai-nallani/arbor"
+      },
+      "image": "/images/arbor-screenshot.png",
+      "sections": [
+        {
+          "type": "text",
+          "title": "Overview",
+          "content": "Arbor is a canvas-based application that enables non-linear exploration of ideas through AI-assisted conversations. Unlike traditional chat interfaces, Arbor lets you branch, fork, and visually connect multiple conversation threads."
+        },
+        {
+          "type": "list",
+          "title": "Features",
+          "items": [
+            "Infinite canvas for visual brainstorming",
+            "AI-powered chat blocks with context awareness",
+            "Branch conversations from any message",
+            "Connect related ideas with visual links",
+            "Sticky notes for annotations",
+            "Persistent workspaces"
+          ]
+        },
+        {
+          "type": "text",
+          "title": "Technical Details",
+          "content": "Built with Next.js and TypeScript. Uses React Flow for the canvas implementation and integrates with OpenAI's API for conversational AI. Data persistence handled through Supabase and Prisma ORM."
+        }
+      ]
+    },
+    {
+      "slug": "amelia",
+      "title": "Amelia",
+      "tagline": "Cursor for Air Traffic Controllers — an AI-powered second brain that makes ATCs 10x more effective.",
+      "tags": ["React", "TypeScript", "FastAPI", "Redis", "Grok", "ElevenLabs"],
+      "links": {
+        "live": "https://devpost.com/software/amelia-b815hi",
+        "github": "https://github.com/sai-nallani/hack-princeton"
+      },
+      "video": "https://www.youtube.com/embed/GPBcNjmKcPM",
+      "sections": [
+        {
+          "type": "text",
+          "title": "The Problem",
+          "content": "Air traffic control is chronically understaffed, leading to delays, safety violations, and fatal accidents. Training an ATC takes up to 7 years, making workforce scaling nearly impossible."
+        },
+        {
+          "type": "text",
+          "title": "Our Solution",
+          "content": "Amelia augments air traffic controllers rather than replacing them. It aggregates real-time airline and weather data, identifies risks for flights within a 40 nautical mile radius, and automates communication with pilots using standardized FAA phraseology."
+        },
+        {
+          "type": "list",
+          "title": "Features",
+          "items": [
+            "Real-time risk identification from flight and weather data",
+            "Automated pilot communication via voice synthesis",
+            "Insights surfaced using standardized FAA phraseology",
+            "Built on scraped NTSA accident/incident reports"
+          ]
+        },
+        {
+          "type": "text",
+          "title": "Built At",
+          "content": "HackPrinceton — built in 12 hours."
+        }
+      ]
+    },
+    {
+      "slug": "putnam-trainer",
+      "title": "Putnam Trainer",
+      "tagline": "A database of all previous Putnam Competition problems with problem tracking and LaTeX notes.",
+      "tags": ["React"],
+      "links": {
+        "live": "https://putnam-trainer.vercel.app/"
+      }
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+.coursework {
+    display: grid;
+    gap: var(--space-xl) var(--space-2xl);
+}
+
+.courseCategory {
+    margin-bottom: var(--space-lg);
+}
+
+.courseCategory h3 {
+    font-family: var(--font-body);
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: var(--space-md);
+    color: var(--text-primary);
+}
+
+.courseList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.courseList li {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: var(--space-md);
+    padding: 4px 0;
+    font-size: 0.9rem;
+}
+
+.courseCode {
+    color: var(--text-secondary);
+    font-family: var(--font-body);
+}
+
+.courseName {
+    color: var(--text-primary);
+}
+
+.courseName a {
+    color: var(--text-primary);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+}
+
+.courseName a:hover {
+    color: var(--accent);
+}
+
+@media (max-width: 768px) {
+    .coursework {
+        grid-template-columns: 1fr;
+    }
+}

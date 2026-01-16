@@ -1,0 +1,82 @@
+.card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: var(--space-xl);
+  max-width: 700px;
+  width: 100%;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--space-lg);
+}
+
+.cardName {
+  font-family: var(--font-heading);
+  font-size: 2rem;
+  font-weight: 400;
+  margin: 0;
+}
+
+.cardContent {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-lg);
+  align-items: start;
+}
+
+.cardBio p {
+  font-size: 1rem;
+  line-height: 1.7;
+  margin-bottom: var(--space-md);
+  color: var(--text-secondary);
+}
+
+.cardImage {
+  width: 150px;
+  height: 150px;
+  border-radius: 8px;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.cardImage img {
+  padding-top: 70%;
+  width: 160%;
+  object-fit: cover;
+  object-position: 20% 80%;
+  border-radius: 8px;
+}
+
+.cardNav {
+  display: flex;
+  gap: var(--space-md);
+  margin-top: var(--space-md);
+  padding-top: var(--space-md);
+  border-top: 1px solid var(--border);
+}
+
+.cardNav a {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.cardNav a:hover {
+  color: var(--text-primary);
+}
+
+@media (max-width: 600px) {
+  .cardContent {
+    grid-template-columns: 1fr;
+  }
+
+  .cardImage {
+    width: 120px;
+    height: 120px;
+  }
+}
