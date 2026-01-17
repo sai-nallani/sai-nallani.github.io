@@ -610,4 +610,23 @@ a:hover {
   .social-links {
     gap: var(--space-xs);
   }
+
+  .theme-toggle {
+    top: var(--space-sm);
+    right: var(--space-sm);
+    width: 36px;
+    height: 36px;
+  }
+}
+
+@media (max-width: 400px) {
+  .social-links a {
+    width: 32px;
+    height: 32px;
+  }
+
+  .social-links svg {
+    width: 14px;
+    height: 14px;
+  }
 }

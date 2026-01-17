@@ -71,12 +71,56 @@
 }
 
 @media (max-width: 600px) {
+  .card {
+    padding: var(--space-lg);
+    margin: var(--space-md);
+    max-width: calc(100% - var(--space-lg));
+  }
+
+  .cardHeader {
+    flex-direction: column;
+    gap: var(--space-md);
+    align-items: flex-start;
+    margin-bottom: var(--space-md);
+  }
+
+  .cardName {
+    font-size: 1.75rem;
+  }
+
   .cardContent {
     grid-template-columns: 1fr;
+    gap: var(--space-md);
   }
 
   .cardImage {
     width: 120px;
     height: 120px;
+    order: -1;
+  }
+
+  .cardNav {
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+}
+
+@media (max-width: 400px) {
+  .card {
+    padding: var(--space-md);
+    border-radius: 8px;
+  }
+
+  .cardName {
+    font-size: 1.5rem;
+  }
+
+  .cardImage {
+    width: 100px;
+    height: 100px;
+  }
+
+  .cardBio p {
+    font-size: 0.9rem;
   }
 }
