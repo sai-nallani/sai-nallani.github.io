@@ -16,8 +16,8 @@ const courses = {
         { code: "MAT 218", name: "Multivariable Analysis and Linear Algebra II" },
     ],
     other: [
-        { code: "--", name: "Measure Theory", link: "/mt-paper.pdf" },
-        { code: "--", name: "Combinatorial Game Theory", link: "/cgt-paper.pdf" },
+        { code: "--", name: "Measure Theory", links: [{ href: "/mt-paper.pdf", text: "paper" }, { href: "/mt-slides.pdf", text: "slides" }] },
+        { code: "--", name: "Combinatorial Game Theory", links: [{ href: "/cgt-paper.pdf", text: "paper" }] },
         { code: "MATH 4110", name: "Abstract Algebra I" },
         { code: "MATH 4120", name: "Abstract Algebra II" },
         { code: "MATH 4560", name: "Number Theory & Cryptography" },
@@ -60,10 +60,18 @@ export default function Courses() {
                                     <li key={course.code + course.name}>
                                         <span className={styles.courseCode}>{course.code}</span>
                                         <span className={styles.courseName}>
-                                            {course.link ? (
-                                                <a href={course.link}>{course.name}</a>
-                                            ) : (
-                                                course.name
+                                            {course.name}
+                                            {course.links && course.links.length > 0 && (
+                                                <span className={styles.courseLinks}>
+                                                    {" ("}
+                                                    {course.links.map((link, i) => (
+                                                        <span key={link.href}>
+                                                            <a href={link.href}>{link.text}</a>
+                                                            {i < course.links.length - 1 && " / "}
+                                                        </span>
+                                                    ))}
+                                                    {")"}
+                                                </span>
                                             )}
                                         </span>
                                     </li>
