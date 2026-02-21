@@ -14,7 +14,7 @@ export default function Home() {
         <div className={styles.cardContent}>
           <div className={styles.cardBio}>
             <p>
-              I&apos;m a Freshman at Princeton University, majoring in CS and Math.
+              I&apos;m a CS/Math major at Princeton University.
               I&apos;m interested in optimization, interpretability, robotics, and reinforcement learning.
             </p>
           </div>
