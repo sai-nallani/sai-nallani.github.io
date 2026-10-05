@@ -2,10 +2,10 @@
     "posts": [
         {
             "slug": "se3-canonicalization",
-            "title": "Which Frame Should a Robot Act In?",
+            "title": "Gripper-Frame Canonicalization on LIBERO",
             "date": "2026-10-05",
             "kind": "Research",
-            "excerpt": "A ten-task performance gap led to an action-coordinate control: with the same observation representation, full gripper-relative targets raised success from 65.3% to 93.1% on one task."
+            "excerpt": "Summer research on reference frames for robot manipulation policies: a ten-task comparison, a one-task control on action coordinates, and a gravity test that didn't help."
         },
         {
             "slug": "konane-universality",

@@ -1,28 +1,40 @@
 ---
-title: "Which Frame Should a Robot Act In?"
+title: "Gripper-Frame Canonicalization on LIBERO"
 date: "2026-10-05"
 ---
 
-## The question
+This summer at Princeton I worked with Christine Allen-Blanchette on reference frames for robot manipulation policies. This post describes what I tried, what the numbers looked like, and what I think they do and don't show.
 
-If a robot learns to pick up a bowl, moving the bowl should not require learning the motion from scratch. *Canonicalization* expresses inputs and outputs in a consistent reference frame; [Dym, Lawrence, and Siegel](https://arxiv.org/abs/2402.16077) give a formal account of this approach and its limitations. Earlier internal experiments motivating this project had found only modest gains from SE(3), the group of 3D rotations and translations. During summer 2026 at Princeton, advised by Christine Allen-Blanchette, I investigated whether the choice of frame—and how a policy represents its actions—could explain the gap.
+## Background
 
-I implemented gripper-frame policy variants and controls, worked on the data, training, and rollout pipeline, and ran the comparisons below. A ten-task result prompted a more focused experiment: keeping the observation representation fixed while changing the action coordinates raised success from 65.3% to 93.1% on one task.
+A policy that learns to pick up a bowl from demonstrations should still work if the bowl is moved or turned on the table. If the policy sees the scene in fixed world coordinates, though, a moved bowl looks like a new input it was never trained on.
+
+*Canonicalization* is one way around this. Before the policy sees anything, you re-express the scene in a reference frame attached to something that moves along with the task, such as the objects or the robot's hand. If the frame moves with the bowl, a shifted or rotated bowl looks the same to the policy as one in the training position. [Dym, Lawrence, and Siegel](https://arxiv.org/abs/2402.16077) give a formal treatment of this idea and its limits.
+
+Frames can account for different amounts of symmetry. A *planar* frame only handles sliding along the table and turning about the vertical axis (yaw). A full SE(3) frame handles every 3D rotation and translation, including tilt. Earlier experiments in the group had found only modest gains from going all the way to SE(3), and I wanted to understand why.
 
 ## Setup
 
-I adapted [PointFlowMatch](https://pointflowmatch.cs.uni-freiburg.de/): a PointNet point-cloud encoder conditions a 1D U-Net that generates action sequences through flow matching. Each of ten [LIBERO Spatial](https://libero-project.github.io/main.html) tasks—a benchmark of simulated robot manipulation—used 50 demonstrations and 512-point observations from two cameras. The robot executes one action before replanning.
+The policy is an adapted [PointFlowMatch](https://pointflowmatch.cs.uni-freiburg.de/). A PointNet encoder reads a 512-point cloud from two cameras, and a 1D U-Net generates a short sequence of actions with flow matching: it starts from noise and follows a learned velocity field toward a plausible action sequence. The robot executes one action and then replans.
 
-| Frame | What it follows | Where it is used |
+I trained a separate policy on each of ten tasks from [LIBERO Spatial](https://libero-project.github.io/main.html), a simulated manipulation benchmark, with 50 demonstrations per task. I compared four frames:
+
+![Side view of the four frames. World axes sit at the table corner. Planar scene axes sit at the objects and stay upright. SE(3) gripper axes sit at the hand and tilt with it. Planar gripper axes sit at the hand but stay upright.](/images/se3-frames.svg)
+
+*Side view. The planar scene and planar gripper frames also turn with the yaw of the objects or hand.*
+
+| Frame | Attached to | Used in |
 | --- | --- | --- |
-| World | Fixed simulator axes | Ten-task baseline |
-| Planar scene | Initial object layout; fixed for the episode | Ten-task scene baseline |
-| SE(3) gripper | Hand position and full 3D orientation | Ten-task gripper policy; full-gripper action targets in the control |
-| Planar gripper | Hand's horizontal position and yaw; world height and tilt remain visible | Observations in every control; action targets in its baseline |
+| World | Fixed simulator axes | Ten-task comparison |
+| Planar scene | Initial object layout, fixed for the episode | Ten-task comparison |
+| SE(3) gripper | Hand position and full 3D orientation | Ten-task comparison; action targets in the control |
+| Planar gripper | Hand position and yaw; height and tilt stay in world terms | Observations in the control; baseline action targets |
 
-## First: a gap across ten tasks
+The frame applies to actions as well as observations. The world policy predicts absolute target poses in world coordinates, and the planar scene policy predicts absolute targets in its scene frame, so height and tilt stay in world terms. The SE(3) gripper policy writes each step relative to the previous one, in the hand's own frame.
 
-The gripper-frame policy improved substantially over world coordinates, but trailed the simpler planar scene frame:
+To test whether a policy handled moved scenes, I rotated each starting layout by ±10°, ±20° or ±30° of yaw and shifted it 10 cm horizontally. With 12 starting layouts and six angles per task, that's 720 attempted trials per policy across the ten tasks. Some setups were rejected before the policy ran: the hand had to reach its transformed start within 1 cm, and objects couldn't drift or change height by more than 3 cm. That left 679 valid trials.
+
+## Results on ten tasks
 
 | Policy frame | Successes | Success rate |
 | --- | ---: | ---: |
@@ -30,34 +42,67 @@ The gripper-frame policy improved substantially over world coordinates, but trai
 | SE(3) gripper | 390/679 | 57.4% |
 | Planar scene | 478/679 | 70.4% |
 
-These tests combined yaw angles of ±10°, ±20°, and ±30° with a +10 cm horizontal shift. Ten tasks × 12 starting layouts × six angles gave 720 attempted trials per policy. Of these, 679 passed the setup checks: hand placement within 1 cm of its transformed start, and object drift/height deviation within 3 cm. The other 41 were rejected before policy rollout.
+The world-frame policy failed every moved trial, which is the problem canonicalization is meant to address. The gripper frame recovered much of that, but it still finished 13 points behind the simpler planar scene frame.
 
-The 13.0-point gap made me question whether canonicalizing everything relative to the hand was the right choice. There was one training run per task, and evaluation did not use the same random seeds across methods. These planar tests also cannot establish robustness to arbitrary 3D rotations.
+With no moves, the three policies are close: world 212/232 (91.4%), SE(3) gripper 200/232 (86.2%) and planar scene 210/232 (90.5%), pooled from the untransformed trials in the evaluation sweeps. All three learned the tasks about equally well, so the 13-point gap is mostly about how they handle moved scenes.
 
-## Then: isolate the action coordinates
+The gap isn't spread evenly across tasks:
 
-To investigate, I focused on LIBERO's task of picking up the black bowl on the cookie box and placing it on the plate. I kept observations in the planar gripper frame and changed the action targets to use the full hand pose, including height and tilt. Instead of representing targets in upright axes, the policy can describe a motion along the hand's own tilted axis.
+| Task (pick up the black bowl …) | SE(3) gripper | Planar scene |
+| --- | ---: | ---: |
+| on the cookie box | 55.6% | 94.4% |
+| between the plate and the ramekin | 51.5% | 83.3% |
+| next to the plate | 57.4% | 83.3% |
+| in the top drawer of the wooden cabinet | 61.1% | 80.6% |
+| on the stove | 47.2% | 63.9% |
+| on the wooden cabinet | 65.3% | 79.2% |
+| next to the ramekin | 80.6% | 84.7% |
+| on the ramekin | 69.4% | 68.1% |
+| next to the cookie box | 11.1% | 5.6% |
+| from the table center | 80.0% | 63.6% |
+
+The scene frame leads by 14 to 39 points on six tasks. Two are close. The gripper frame wins on "from the table center" by 16 points, and on "next to the cookie box", where both policies mostly fail. Each task has 54 to 72 valid trials, so single-task differences are noisy.
+
+The cookie-box task shows the largest gap. Here are the two policies on the same starting layout, rotated 10° and shifted 10 cm. The dots are the 512-point cloud the policy actually sees.
+
+![Planar scene policy picking up the bowl from the cookie box and placing it on the plate.](/images/bowl_task3_scene_success_rt.gif) ![SE(3) gripper policy failing the same task from the same start.](/images/bowl_task3_grip_failure_rt.gif)
+
+*Left: the planar scene policy succeeds at step 108. Right: the SE(3) gripper policy fails and runs out the 400-step limit (shown at 2× speed).*
+
+This comparison is rough. Each task had one training run, the methods didn't share evaluation random seeds, and the test moves were all planar, so these numbers say nothing about arbitrary 3D rotations.
+
+## Action-coordinate control
+
+Compared with the planar baselines, the SE(3) gripper policy changes two things: what the policy sees, and the coordinates its actions are written in. To separate these, I took one task (pick up the black bowl on the cookie box and place it on the plate) and kept the observations fixed in the planar gripper frame. Only the action targets changed.
+
+With planar gripper targets, a motion is described in upright axes centered on the hand. With full gripper targets, it is described in the hand's own axes, so "move along the hand's axis" means the same thing whether or not the hand is tilted.
 
 | Action targets | Successes | Success rate |
 | --- | ---: | ---: |
 | Planar gripper | 47/72 | 65.3% |
-| Full gripper, uncoupled | 67/72 | 93.1% |
+| Full gripper | 67/72 | 93.1% |
 | Full gripper, coupled | 69/72 | 95.8% |
 
-Every policy faced the same 12 starting layouts, six yaw angles, +10 cm shift, and evaluation random seeds. The more focused comparison is the first two rows: **+27.8 percentage points**, with a 95% interval of **9.7–45.8**.
+Here all three policies saw the same 12 layouts, six yaw angles, 10 cm shift and evaluation seeds, so the rows are directly comparable. Switching to full gripper targets improved success by 27.8 points, with a 95% interval of 9.7 to 45.8.
 
-The third row asks a follow-up question. During training, I randomly perturb the observation frame. The *coupled* variant applies that same perturbation to the full-gripper action frame; the uncoupled variant leaves it unperturbed. This added only 2.8 points, with an interval of −6.9–16.7: no clear additional benefit.
+The third row tests a training detail. During training I randomly perturb the observation frame by about 1 cm and 0.05 rad as augmentation. The *coupled* variant applies the same perturbation to the action frame, so observations and actions stay consistent with each other. That added 2.8 points, with an interval of −6.9 to 16.7, so I can't say coupling helps.
 
-![Action-coordinate change: plus 27.8 percentage points, 95% interval 9.7 to 45.8. Additional training-frame coupling: plus 2.8 points, interval minus 6.9 to 16.7.](/images/se3-frame-controls.svg)
+![Paired differences in success rate. Full versus planar gripper targets: plus 27.8 points, 95% interval 9.7 to 45.8. Coupled versus uncoupled: plus 2.8 points, interval minus 6.9 to 16.7.](/images/se3-frame-controls.svg)
 
-*The 95% intervals resample the 12 starting layouts, keeping each layout's six outcomes together. They describe these trained policies, not variation across training seeds.*
+*The intervals come from resampling the 12 starting layouts, keeping each layout's six trials together. They describe these particular trained policies, not variation between training runs.*
 
-The tension remains: full-gripper actions helped on this bowl task, yet the full-SE(3) gripper policy trailed across ten tasks. The control retains planar observations and expresses all targets relative to the current hand; the original gripper policy uses full-SE(3) observations and step-by-step targets. The control identifies a promising design choice, not an explanation of the entire ten-task gap.
+This doesn't explain the ten-task gap on its own. Full gripper targets helped a lot on the bowl task, yet the full SE(3) gripper policy trailed across ten tasks. The two setups also differ in other ways: the control keeps planar observations and writes every target relative to the current hand, while the original gripper policy uses full SE(3) observations and writes each step relative to the previous one. I'd treat the result as a lead on the action representation rather than an answer.
 
-## Gravity and the next experiment
+## Gravity
 
-Gravity is another possible explanation. “Down” is fixed in world coordinates but changes coordinates in a full gripper frame. In a separate pilot on the same cookie-box-to-plate task, I compared the original SE(3) gripper policy with step-by-step targets, with and without explicit gravity features. The policies shared 72 evaluation trials and random seeds: 37/72 successes (51.4%) with gravity, versus 45/72 (62.5%) without. That 62.5% belongs to this separate full-SE(3) policy comparison, not the planar-gripper control above. Gravity features did not provide a fix.
+Gravity is another possible factor. In world coordinates "down" is always the same direction, but in a tilted gripper frame its coordinates change. Expressing the scene relative to the hand also removes the hand's absolute height. Together, these mean the gripper policy no longer sees directly which way is down or how far it is above the table.
 
-The next experiment would repeat the action-coordinate control across tasks and training seeds, then compare gripper and scene frames with matched full-SE(3) parameterizations. I wrapped up with the [code, raw results, and handoff notes](https://github.com/sai-nallani/se3-canonicalization) available for someone to continue the work.
+To give that information back, I added four inputs per observation step: the gravity direction expressed in the gripper frame (three numbers) and the gripper's height (one number). They are fed to the network as global conditioning, alongside the point-cloud features and proprioception, not attached to individual points. Neither changes when the scene is turned about the vertical, so they don't undo the canonicalization.
 
-Related work: [Wang et al.'s local-canonicalization policies](https://arxiv.org/abs/2509.14431) study planar swarm control, a different setting from the single-arm manipulation experiments here.
+I tested this on the same bowl task with the original SE(3) gripper policy. Over the same 72 trials and seeds, it succeeded 37 times (51.4%) with gravity features and 45 times (62.5%) without. The baseline differs from the table above because this is the original SE(3) gripper policy, not the planar-gripper control. Adding gravity this way didn't help.
+
+## Next steps
+
+The next step would be to repeat the action-coordinate control across more tasks and multiple training seeds. After that, I'd compare gripper and scene frames with matching full SE(3) action parameterizations, so the frame is the only difference. The [code, raw results and handoff notes](https://github.com/sai-nallani/se3-canonicalization) are on GitHub.
+
+[Wang et al.](https://arxiv.org/abs/2509.14431) study local-canonicalization policies for planar swarm control, a related idea in a different setting.

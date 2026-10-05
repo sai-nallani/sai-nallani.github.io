@@ -456,9 +456,29 @@ a:hover {
   border-radius: 6px;
 }
 
-.blog-content img[src="/images/se3-frame-controls.svg"] {
+.blog-content img[src="/images/se3-frame-controls.svg"],
+.blog-content img[src="/images/se3-frames.svg"] {
   max-width: 480px;
   margin-inline: auto;
+}
+
+/* Two images in one paragraph sit side by side */
+.blog-content p:has(> img + img) {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-sm);
+  max-width: none;
+}
+
+@media (max-width: 480px) {
+  .blog-content p:has(> img + img) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* SVG figures are drawn on the light background; invert them for dark mode */
+[data-theme="dark"] .blog-content img[src$=".svg"] {
+  filter: invert(0.92) hue-rotate(180deg);
 }
 
 .blog-content ul,
