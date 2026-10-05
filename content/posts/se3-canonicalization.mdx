@@ -1,12 +1,52 @@
 ---
-title: "Coordinate Frames, Robot Learning, and Gravity"
+title: "Which Frame Should a Robot Act In?"
 date: "2026-10-05"
 ---
 
-This summer at Princeton, I worked on canonicalization for robot manipulation: expressing a scene in a consistent coordinate frame so a robot can reuse what it learned when objects move. Earlier work explored SE(3), the group of three-dimensional rotations and translations, but found only modest performance gains. That motivated our question: when does this extra symmetry actually help a robot learn to manipulate objects?
+## The question
 
-We explored using the gripper itself as the reference frame, expressing both the point-cloud observations and the robot's target motions relative to it. We trained on ten simulated LIBERO tasks with 50 demonstrations per task. Under combined yaw rotation and a 10 cm horizontal shift, the world-coordinate policy succeeded in **0/679** valid trials, our SE(3) gripper policy in **390/679 (57.4%)**, and the planar scene-frame policy in **478/679 (70.4%)**. Canonicalization helped substantially, but the scene frame still led by **13.0 percentage points**. These were planar tests with one training run per task and unpaired evaluation randomness across methods, not evidence of robustness to arbitrary 3D rotations.
+If a robot learns to pick up a bowl, moving the bowl should not require learning the motion from scratch. Earlier work explored *canonicalization*: expressing observations and actions in a consistent reference frame. Extending this to SE(3), the group of 3D rotations and translations, had produced only modest gains. During summer 2026 at Princeton, I investigated whether the choice of frame—and how observations and actions share it—could explain the difference.
 
-A paired control on one task suggested that coupling observation and action frames matters: coupled gripper coordinates achieved **69/72 successes (95.8%)**, compared with **47/72 (65.3%)** for a planar gripper control. The gain was **30.6 percentage points**, with a 95% interval of **12.5–48.6 points** from bootstrapping the 12 starting layouts. This result is conditional on that trained pair, rather than a claim about every task.
+I implemented gripper-frame policy variants and experimental controls, worked on the data, training, and rollout pipeline, and ran the comparisons below. The most useful finding came from changing how the policy represents its actions, rather than simply giving it more symmetry.
 
-One possible explanation for the gap is gravity. A manipulation task is not physically unchanged by every 3D rotation: gravity singles out a vertical direction. In world coordinates, “down” is fixed; after canonicalization, its coordinates change with the reference frame. Without that information, a policy may lose a useful physical cue. In a separate paired pilot, adding gravity features gave **37/72 successes (51.4%)**, versus **45/72 (62.5%)** without them. That showed no clear benefit, so gravity remains a hypothesis rather than an explanation we established. The code and findings are available <a href="https://github.com/sai-nallani/se3-canonicalization">on GitHub</a>.
+## Setup
+
+I adapted a PointFlowMatch policy: a PointNet point-cloud encoder conditions a 1D U-Net that generates action sequences through flow matching. Each of ten LIBERO Spatial tasks—a benchmark of simulated robot manipulation—used 50 demonstrations and 512-point observations from two cameras. The robot executes one action before replanning.
+
+The proposed gripper frame describes the surroundings relative to the hand. For comparison, the world frame stays fixed, while the planar scene frame is computed from the initial object cloud and held fixed throughout an episode. A *planar gripper* frame instead follows the hand's horizontal position and yaw, retaining world height and tilt. It is a different baseline from the scene frame.
+
+## What the control revealed
+
+On one bowl-picking task, I kept observations in the planar gripper frame and changed the action coordinates. Full gripper-relative targets include the hand's height and tilt: “move along the hand's axis” has a consistent meaning even when the hand tilts. In the *coupled* variant, a random training perturbation of the observation frame is also applied to the action frame; the uncoupled variant leaves the action frame unperturbed.
+
+| Action representation | Successes | Success rate |
+| --- | ---: | ---: |
+| Planar gripper targets | 47/72 | 65.3% |
+| Full gripper targets, uncoupled | 67/72 | 93.1% |
+| Full gripper targets, coupled | 69/72 | 95.8% |
+
+Each policy faced the same 12 starting layouts at six nonzero yaw angles, with paired evaluation randomness. The coupled variant beat planar targets by **30.6 percentage points** (95% layout-bootstrap interval: **12.5–48.6**). But coupling alone added only **2.8 points** over uncoupled full-gripper targets (interval: **−6.9–16.7**). The evidence favors the action representation; it does not isolate a reliable benefit from coupling itself.
+
+![Paired success-rate differences: coupled full-gripper targets versus planar targets, plus 30.6 percentage points with a 95% interval from 12.5 to 48.6; coupled versus uncoupled full-gripper targets, plus 2.8 points with an interval from minus 6.9 to 16.7.](/images/se3-frame-controls.svg)
+
+*Intervals resample the 12 layouts, keeping each layout's six outcomes together. They describe these trained policies, not variability across training seeds.*
+
+## What did not generalize
+
+The original ten-task comparison was less favorable to full SE(3) gripper canonicalization:
+
+| Policy frame | Successes | Success rate |
+| --- | ---: | ---: |
+| World | 0/679 | 0.0% |
+| SE(3) gripper | 390/679 | 57.4% |
+| Planar scene | 478/679 | 70.4% |
+
+These tests combined yaw angles of ±10°, ±20°, and ±30° with a +10 cm horizontal shift. Across ten tasks and 12 starting layouts, that made 720 attempted trials per policy. Of these, 679 passed the setup checks: the hand had to reach its transformed start within 1 cm, and object drift/height deviation had to stay within 3 cm. The other 41 were invalid setups, not policy failures excluded after rollout.
+
+The gripper policy trailed the scene baseline by **13.0 points**. There was one training run per task, with unpaired evaluation randomness across methods. These planar tests also cannot establish robustness to arbitrary 3D rotations.
+
+## The open question
+
+Gravity might help explain why extra symmetry did not translate into better performance. “Down” is fixed in world coordinates but changes coordinates in a full gripper frame; arbitrary physical rotations also change a manipulation task unless gravity rotates with it. A policy may need that physical cue. However, a separate paired pilot with gravity features achieved **37/72 successes (51.4%)**, versus **45/72 (62.5%)** without them. It did not support gravity features as a fix.
+
+The next useful experiment would repeat the action-frame controls across tasks and training seeds, then compare gripper and scene frames with matched full-SE(3) parameterizations. I wrapped up the project with the [code, raw results, and handoff notes on GitHub](https://github.com/sai-nallani/se3-canonicalization).

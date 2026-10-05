@@ -443,6 +443,53 @@ a:hover {
   padding: 0;
 }
 
+.blog-content > div img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.blog-content ul,
+.blog-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: var(--space-md);
+}
+
+.blog-content li + li {
+  margin-top: var(--space-xs);
+}
+
+.blog-table {
+  overflow-x: auto;
+  margin-bottom: var(--space-md);
+}
+
+.blog-table:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+}
+
+.blog-table table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.blog-table th,
+.blog-table td {
+  padding: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.blog-table th {
+  background: var(--bg-secondary);
+  font-weight: 500;
+}
+
 .paper-panel {
   display: flex;
   align-items: flex-end;

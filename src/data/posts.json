@@ -2,10 +2,10 @@
     "posts": [
         {
             "slug": "se3-canonicalization",
-            "title": "Coordinate Frames, Robot Learning, and Gravity",
+            "title": "Which Frame Should a Robot Act In?",
             "date": "2026-10-05",
             "kind": "Research",
-            "excerpt": "A summer project on learning robot motions relative to the gripper, and why gravity might limit the benefits of 3D symmetry."
+            "excerpt": "A controlled robot-learning experiment found a 30.6-point gain from full gripper-relative actions with coupled training frames. What does that comparison actually isolate?"
         },
         {
             "slug": "konane-universality",

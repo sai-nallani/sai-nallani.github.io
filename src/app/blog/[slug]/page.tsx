@@ -4,6 +4,7 @@ import postsData from "@/data/posts.json";
 import type { Metadata } from "next";
 import fs from "fs";
 import path from "path";
+import { parseMarkdown } from "@/lib/markdown";
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -37,18 +38,6 @@ function formatDate(dateStr: string): string {
     const months = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
     return `${months[parseInt(month, 10) - 1]} ${year}`;
-}
-
-function parseMarkdown(text: string): string {
-    return text
-        .replace(/^## (.*$)/gm, "<h2>$1</h2>")
-        .replace(/^# (.*$)/gm, "<h2>$1</h2>")
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/\*(.*?)\*/g, "<em>$1</em>")
-        .replace(/`(.*?)`/g, "<code>$1</code>")
-        .replace(/\n\n/g, "</p><p>")
-        .replace(/^(?!<[hp])(.*\S.*)$/gm, "<p>$1</p>")
-        .replace(/<p><\/p>/g, "");
 }
 
 export default async function BlogPost({ params }: Props) {
