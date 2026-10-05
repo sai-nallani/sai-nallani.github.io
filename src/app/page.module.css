@@ -1,126 +1,159 @@
-.card {
-  background: var(--bg-secondary);
-  border-radius: 12px;
-  padding: var(--space-xl);
-  max-width: 700px;
-  width: 100%;
+.main {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: var(--space-2xl) var(--space-md) var(--space-xl);
+  text-align: center;
 }
 
-.cardHeader {
+/* Intro */
+.intro {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
+}
+
+.avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  overflow: hidden;
+  background: var(--border);
+  margin-bottom: var(--space-md);
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0%;
+  transform: scale(1.9);
+  transform-origin: 50% 45%;
+}
+
+.name {
+  font-size: clamp(2.5rem, 7vw, 3.25rem);
+  font-weight: 400;
+  margin-bottom: var(--space-sm);
+}
+
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--space-xs) var(--space-md);
+  font-size: 0.875rem;
   margin-bottom: var(--space-lg);
 }
 
-.cardName {
-  font-family: var(--font-heading);
-  font-size: 2rem;
-  font-weight: 400;
-  margin: 0;
-}
-
-.cardContent {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--space-lg);
-  align-items: start;
-}
-
-.cardBio p {
-  font-size: 1rem;
-  line-height: 1.7;
-  margin-bottom: var(--space-md);
+.links a {
   color: var(--text-secondary);
 }
 
-.cardImage {
-  width: 150px;
-  height: 150px;
-  border-radius: 8px;
-  background: var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  overflow: hidden;
+.links a:hover {
+  color: var(--text-primary);
 }
 
-.cardImage img {
-  padding-top: 70%;
-  width: 160%;
-  object-fit: cover;
-  object-position: 20% 80%;
-  border-radius: 8px;
+.arrow {
+  font-size: 0.7em;
+  margin-left: 2px;
+  vertical-align: 0.15em;
 }
 
-.cardNav {
+.bio {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  margin: 0 auto;
+  max-width: 46ch;
+}
+
+/* Divider */
+.divider {
+  color: var(--accent);
+  letter-spacing: 0.4em;
+  margin: var(--space-xl) 0;
+  user-select: none;
+}
+
+/* Sections */
+.sectionTitle {
+  font-size: 0.75rem;
+  font-family: var(--font-body);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-lg);
+}
+
+.list {
+  list-style: none;
   display: flex;
+  flex-direction: column;
   gap: var(--space-md);
-  margin-top: var(--space-md);
-  padding-top: var(--space-md);
-  border-top: 1px solid var(--border);
 }
 
-.cardNav a {
-  font-size: 0.875rem;
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.itemTitle {
+  font-family: var(--font-heading);
+  font-size: 1.5rem;
+  line-height: 1.3;
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+}
+
+.itemTitle:hover {
+  border-bottom-color: var(--accent);
+}
+
+.itemText {
+  font-size: 0.925rem;
+  margin: 0 auto;
+  max-width: 44ch;
+}
+
+.itemDate {
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
-.cardNav a:hover {
+/* Footer */
+.footer {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-size: 0.875rem;
+  color: var(--accent);
+}
+
+.footer a {
+  color: var(--text-secondary);
+}
+
+.footer a:hover {
   color: var(--text-primary);
 }
 
 @media (max-width: 600px) {
-  .card {
-    padding: var(--space-lg);
-    margin: var(--space-md);
-    max-width: calc(100% - var(--space-lg));
+  .main {
+    padding: var(--space-xl) var(--space-md);
   }
 
-  .cardHeader {
-    flex-direction: column;
-    gap: var(--space-md);
-    align-items: flex-start;
-    margin-bottom: var(--space-md);
+  .avatar {
+    width: 96px;
+    height: 96px;
   }
 
-  .cardName {
-    font-size: 1.75rem;
+  .divider {
+    margin: var(--space-lg) 0;
   }
 
-  .cardContent {
-    grid-template-columns: 1fr;
-    gap: var(--space-md);
-  }
-
-  .cardImage {
-    width: 120px;
-    height: 120px;
-    order: -1;
-  }
-
-  .cardNav {
-    flex-wrap: wrap;
-    gap: var(--space-sm);
-  }
-}
-
-@media (max-width: 400px) {
-  .card {
-    padding: var(--space-md);
-    border-radius: 8px;
-  }
-
-  .cardName {
-    font-size: 1.5rem;
-  }
-
-  .cardImage {
-    width: 100px;
-    height: 100px;
-  }
-
-  .cardBio p {
-    font-size: 0.9rem;
+  .itemTitle {
+    font-size: 1.3rem;
   }
 }
