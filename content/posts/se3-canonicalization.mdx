@@ -1,0 +1,10 @@
+---
+title: "Coordinate Frames, Robot Learning, and Gravity"
+date: "2026-10-05"
+---
+
+This summer at Princeton, I worked on canonicalization for robot manipulation: expressing a scene in a consistent coordinate frame so a robot can reuse what it learned when objects move. Earlier work explored SE(3), the group of three-dimensional rotations and translations, but found only modest performance gains. That motivated our question: when does this extra symmetry actually help a robot learn to manipulate objects?
+
+We explored using the gripper itself as the reference frame, expressing both the point-cloud observations and the robot's target motions relative to it. The idea was to make the learned behavior depend on the relationship between the hand and its surroundings. On ten simulated LIBERO tasks, this improved robustness over a policy using world coordinates, but did not consistently beat a simpler scene frame restricted to planar rotations and translations. Our evaluations used yaw and horizontal shifts; they did not establish robustness to arbitrary 3D rotations. Small controlled experiments also suggested that how observation and action frames are coupled matters.
+
+One possible explanation for the gap is gravity. A manipulation task is not physically unchanged by every 3D rotation: gravity singles out a vertical direction. In world coordinates, “down” is fixed; after canonicalization, its coordinates change with the reference frame. Without that information, a policy may lose a useful physical cue. We tried adding gravity features, but the pilot showed no clear improvement, so this remains a hypothesis rather than an explanation we established. The code and findings are available <a href="https://github.com/sai-nallani/se3-canonicalization">on GitHub</a>.

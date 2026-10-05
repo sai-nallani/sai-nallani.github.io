@@ -1,6 +1,13 @@
 {
     "posts": [
         {
+            "slug": "se3-canonicalization",
+            "title": "Coordinate Frames, Robot Learning, and Gravity",
+            "date": "2026-10-05",
+            "kind": "Research",
+            "excerpt": "A summer project on learning robot motions relative to the gripper, and why gravity might limit the benefits of 3D symmetry."
+        },
+        {
             "slug": "konane-universality",
             "title": "Universality and Konane",
             "date": "2024-12-23",
