@@ -443,6 +443,45 @@ a:hover {
   padding: 0;
 }
 
+.paper-panel {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xl);
+}
+
+.paper-panel .project-links {
+  flex-wrap: wrap;
+  margin-top: 0;
+}
+
+.paper-thumb {
+  flex-shrink: 0;
+  width: 140px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.08);
+  transition: transform var(--transition-base);
+}
+
+.paper-thumb:hover {
+  transform: translateY(-3px) rotate(-1deg);
+}
+
+.paper-thumb img {
+  display: block;
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .paper-panel {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-md);
+  }
+}
+
 /* Courses List */
 .courses-list {
   display: flex;

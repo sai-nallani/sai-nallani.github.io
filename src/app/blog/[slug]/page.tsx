@@ -69,8 +69,30 @@ export default async function BlogPost({ params }: Props) {
                 <article className="blog-content">
                     <header className="blog-header">
                         <h1>{post.title}</h1>
-                        <p className="blog-meta">{formatDate(post.date)}</p>
+                        <p className="blog-meta">
+                            {post.kind ? `${post.kind} · ` : ""}{formatDate(post.date)}
+                        </p>
                     </header>
+
+                    {post.pdf && (
+                        <aside className="paper-panel">
+                            {post.thumbnail && (
+                                <a href={post.pdf} target="_blank" rel="noopener noreferrer" className="paper-thumb">
+                                    <img src={post.thumbnail} alt={`First page of ${post.title}`} />
+                                </a>
+                            )}
+                            <div className="project-links">
+                                <a href={post.pdf} target="_blank" rel="noopener noreferrer" className="primary">
+                                    Read the paper ↗
+                                </a>
+                                {post.slides && (
+                                    <a href={post.slides} target="_blank" rel="noopener noreferrer">
+                                        Slides ↗
+                                    </a>
+                                )}
+                            </div>
+                        </aside>
+                    )}
 
                     {content ? (
                         <div dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }} />

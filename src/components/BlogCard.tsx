@@ -5,6 +5,7 @@ interface Post {
     title: string;
     date: string;
     excerpt: string;
+    kind?: string;
 }
 
 function formatDate(dateStr: string): string {
@@ -20,7 +21,7 @@ export default function BlogCard({ post }: { post: Post }) {
             <h3>
                 <Link href={`/blog/${post.slug}`}>{post.title}</Link>
             </h3>
-            <p className="blog-date">{formatDate(post.date)}</p>
+            <p className="blog-date">{post.kind ? `${post.kind} · ` : ""}{formatDate(post.date)}</p>
             <p className="blog-excerpt">{post.excerpt}</p>
         </article>
     );

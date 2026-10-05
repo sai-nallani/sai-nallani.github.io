@@ -1,10 +1,23 @@
 {
     "posts": [
         {
-            "slug": "invase-toy-model",
-            "title": "INVASE Architecture: A Toy Model",
-            "date": "2026-01-15",
-            "excerpt": "Exploring a toy implementation of the INVASE (Instance-wise Variable Selection) architecture for interpretable machine learning."
+            "slug": "konane-universality",
+            "title": "Universality and Konane",
+            "date": "2024-12-23",
+            "kind": "Expository",
+            "excerpt": "An exposition of Carvalho and Santos's proof that Konane, a Hawaiian jumping game, realizes every short game value.",
+            "thumbnail": "/images/cgt-paper-thumb.png",
+            "pdf": "/cgt-paper.pdf"
+        },
+        {
+            "slug": "measure-theory-radon-nikodym",
+            "title": "Measure Theory and the Radon–Nikodym Theorem",
+            "date": "2024-07-10",
+            "kind": "Expository",
+            "excerpt": "Measure theory from σ-algebras up through the Lebesgue integral and limit theorems, ending at the Radon–Nikodym theorem and its uses in probability.",
+            "thumbnail": "/images/mt-paper-thumb.png",
+            "pdf": "/mt-paper.pdf",
+            "slides": "/mt-slides.pdf"
         }
     ]
 }

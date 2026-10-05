@@ -118,12 +118,21 @@ export default function Home() {
           {posts.map((post) => (
             <li key={post.slug}>
               <Link href={`/blog/${post.slug}`} className={styles.row}>
-                <span className={styles.date}>{formatDate(post.date)}</span>
+                <span className={styles.date}>
+                  {formatDate(post.date)}
+                  {post.kind && <span className={styles.kind}>{post.kind}</span>}
+                </span>
                 <div className={styles.rowMain}>
                   <h3 className={styles.rowTitle}>{post.title}</h3>
                   <p className={styles.rowText}>{post.excerpt}</p>
                 </div>
-                <span className={styles.rowArrow}>→</span>
+                {post.thumbnail ? (
+                  <span className={styles.paper}>
+                    <img src={post.thumbnail} alt="" />
+                  </span>
+                ) : (
+                  <span className={styles.rowArrow}>→</span>
+                )}
               </Link>
             </li>
           ))}

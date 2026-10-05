@@ -146,8 +146,37 @@
   padding-top: 0.45rem;
 }
 
+.kind {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  font-size: 0.62rem;
+  letter-spacing: 0.06em;
+}
+
 .rowMain {
   min-width: 0;
+}
+
+.paper {
+  width: 64px;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+  transform: rotate(2deg);
+  transition: transform var(--transition-base);
+}
+
+.paper img {
+  display: block;
+  width: 100%;
+}
+
+.row:hover .paper {
+  transform: rotate(0deg) translateY(-2px);
 }
 
 .rowTitle {

@@ -1,0 +1,20 @@
+---
+title: "Universality and Konane"
+date: "2024-12-23"
+---
+
+*An expository paper on a surprising result in combinatorial game theory: one board game is rich enough to realize every short game value.*
+
+## The game
+
+Konane is a Hawaiian jumping game. The board starts full, with black and white stones in a checkerboard pattern. After an opening that removes two adjacent stones, players take turns jumping one of their stones orthogonally over an opposing stone into an empty square, capturing it. Whoever makes the last move wins.
+
+## The question
+
+Conway builds every game inductively by *birthday*: 0 is born on day 0, and each game on a later day is made from games born before it. Games that always end are called *short*, and together they form the short Conway group.
+
+Most rulesets only reach a corner of that group. Red-Blue Hackenbush positions are all numbers, Nim positions are all nimbers, and Domineering reaches switches, numbers and nimbers. A ruleset is a *habitat* for a set of values if every value in the set appears as some position, and it is *universal* if it is a habitat for every short game. Is any ruleset universal?
+
+## The answer
+
+Yes. Carvalho and Santos proved that Konane is universal. The paper works through their proof: it first builds integers, dyadic fractions and nimbers out of Konane positions, then introduces two gadgets, *rubber bands* and *taps*, and uses them to prove the main theorem.
