@@ -409,6 +409,11 @@ a:hover {
 
 .blog-content {
   max-width: 65ch;
+  color-scheme: light;
+}
+
+[data-theme="dark"] .blog-content {
+  color-scheme: dark;
 }
 
 .blog-content h2 {
@@ -449,6 +454,11 @@ a:hover {
   height: auto;
   border: 1px solid var(--border);
   border-radius: 6px;
+}
+
+.blog-content img[src="/images/se3-frame-controls.svg"] {
+  max-width: 480px;
+  margin-inline: auto;
 }
 
 .blog-content ul,

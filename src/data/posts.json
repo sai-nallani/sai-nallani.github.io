@@ -5,7 +5,7 @@
             "title": "Which Frame Should a Robot Act In?",
             "date": "2026-10-05",
             "kind": "Research",
-            "excerpt": "A controlled robot-learning experiment found a 30.6-point gain from full gripper-relative actions with coupled training frames. What does that comparison actually isolate?"
+            "excerpt": "A ten-task performance gap led to an action-coordinate control: with the same observation representation, full gripper-relative targets raised success from 65.3% to 93.1% on one task."
         },
         {
             "slug": "konane-universality",
