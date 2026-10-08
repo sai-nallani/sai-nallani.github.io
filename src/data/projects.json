@@ -1,9 +1,18 @@
 {
   "projects": [
     {
+      "slug": "gripper-canon",
+      "title": "Gripper-Frame Canonicalization",
+      "tagline": "Comparing world, object and gripper reference frames for flow-matching robot policies on LIBERO, with Christine Allen-Blanchette.",
+      "tags": ["Python", "PyTorch", "Robotics"],
+      "links": {
+        "github": "https://github.com/sai-nallani/se3-canonicalization"
+      }
+    },
+    {
       "slug": "arbor",
       "title": "Arbor",
-      "tagline": "A visual thinking and brainstorming tool with AI-powered branching conversations.",
+      "tagline": "A canvas for brainstorming with branching LLM chats.",
       "tags": ["Next.js", "TypeScript", "React Flow", "AI"],
       "links": {
         "live": "https://www.arbor.ink",
@@ -14,31 +23,31 @@
         {
           "type": "text",
           "title": "Overview",
-          "content": "Arbor is a canvas-based application that enables non-linear exploration of ideas through AI-assisted conversations. Unlike traditional chat interfaces, Arbor lets you branch, fork, and visually connect multiple conversation threads."
+          "content": "Arbor is a canvas where each LLM chat is a block. You can branch a new chat from any message, fork threads, and draw links between related ideas, instead of scrolling through one long thread."
         },
         {
           "type": "list",
           "title": "Features",
           "items": [
-            "Infinite canvas for visual brainstorming",
-            "AI-powered chat blocks with context awareness",
-            "Branch conversations from any message",
-            "Connect related ideas with visual links",
+            "Infinite canvas",
+            "LLM chat blocks",
+            "Branch a new chat from any message",
+            "Links between related ideas",
             "Sticky notes for annotations",
-            "Persistent workspaces"
+            "Workspaces that save between sessions"
           ]
         },
         {
           "type": "text",
           "title": "Technical Details",
-          "content": "Built with Next.js and TypeScript. Uses React Flow for the canvas implementation and integrates with OpenAI's API for conversational AI. Data persistence handled through Supabase and Prisma ORM."
+          "content": "Built with Next.js and TypeScript, using React Flow for the canvas, OpenAI's API for the chats, and Supabase with Prisma for storage."
         }
       ]
     },
     {
       "slug": "amelia",
       "title": "Amelia",
-      "tagline": "Cursor for Air Traffic Controllers — an AI-powered second brain that makes ATCs 10x more effective.",
+      "tagline": "A hackathon assistant for air traffic controllers that flags risky flights and talks to pilots in standard FAA phraseology.",
       "tags": ["React", "TypeScript", "FastAPI", "Redis", "Grok", "ElevenLabs"],
       "links": {
         "live": "https://devpost.com/software/amelia-b815hi",
@@ -49,27 +58,26 @@
         {
           "type": "text",
           "title": "The Problem",
-          "content": "Air traffic control is chronically understaffed, leading to delays, safety violations, and fatal accidents. Training an ATC takes up to 7 years, making workforce scaling nearly impossible."
+          "content": "Air traffic control is understaffed, which contributes to delays and safety incidents. Training a new controller takes years, so the shortage can't be fixed quickly."
         },
         {
           "type": "text",
           "title": "Our Solution",
-          "content": "Amelia augments air traffic controllers rather than replacing them. It aggregates real-time airline and weather data, identifies risks for flights within a 40 nautical mile radius, and automates communication with pilots using standardized FAA phraseology."
+          "content": "Amelia pulls in live flight and weather data, flags risks for flights within 40 nautical miles, and talks to pilots through a synthesized voice using standard FAA phraseology. It's meant to assist the controller."
         },
         {
           "type": "list",
           "title": "Features",
           "items": [
-            "Real-time risk identification from flight and weather data",
-            "Automated pilot communication via voice synthesis",
-            "Insights surfaced using standardized FAA phraseology",
-            "Built on scraped NTSA accident/incident reports"
+            "Risk flags from live flight and weather data",
+            "Voice synthesis for calls to pilots",
+            "Uses scraped NTSB accident and incident reports"
           ]
         },
         {
           "type": "text",
           "title": "Built At",
-          "content": "HackPrinceton — built in 12 hours."
+          "content": "Built in 12 hours at HackPrinceton."
         }
       ]
     },

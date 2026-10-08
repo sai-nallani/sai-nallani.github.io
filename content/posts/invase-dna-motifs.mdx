@@ -1,0 +1,58 @@
+---
+title: "INVASE on a Toy DNA Task"
+date: "2026-10-05"
+---
+
+*Work in progress: I'm writing up thoughts on a project I was working on a few months ago. Will work on the project again someday :)*
+
+[INVASE](https://openreview.net/forum?id=BJg_roAcK7) (Yoon, Jordon and van der Schaar, ICLR 2019) learns, for each input, a small set of features that's enough to reproduce a model's prediction. I wanted to try it on DNA. Transcription factors are proteins that turn genes on and off by binding to short DNA motifs. Since these motifs can appear anywhere in a sequence, the important positions vary from one input to another. 
+INVASE, in theory, should solve this problem quite well.
+
+## Setup
+
+I wanted a task where I already know the right answer, so I picked about the simplest one possible: does a 100-base sequence contain `AAAAA`?
+
+For the data, I generated 100 ancestor sequences and planted `AAAAA` at a random spot in half of them. Each ancestor then got 100 descendants, where every base mutates with probability 0.1. The mutations wreck some of the planted motifs and once in a while make a new one by accident, so 37.4% of the 10,000 descendants end up positive.
+
+A small CNN basically solves this (test AUROC 0.9998). A linear model with one weight per base per position gets 0.50. That makes sense, because it can count A's but has no way to tell whether five of them are next to each other.
+
+## INVASE
+
+INVASE has three networks. The actor looks at a sequence and gives each position a probability of being kept. The critic has to predict the label from only the kept positions. (The input is one-hot, so a dropped position is all zeros, which is also what an unknown base looks like.) The baseline gets to see the whole sequence.
+
+The actor samples a mask $z$ and is trained with REINFORCE, with reward
+
+$$
+R = \log q(y \mid z \odot x) - \log q(y \mid x).
+$$
+
+In words, that's the critic's log-likelihood of the true label from the masked sequence minus the baseline's from the full one. There's also a penalty on how many positions the actor keeps, weighted by λ.
+
+To check whether the actor actually finds the motif, I use selection AUROC: for each positive sequence, how well do the actor's scores rank the five motif positions above the other 95? Chance is 0.5.
+
+## Results so far
+
+It doesn't work yet. Sweeping λ from 0.001 to 30 takes the actor from keeping every position to keeping none, but selection AUROC stays between 0.42 and 0.57 over the entire range. A couple of runs even land a little below chance, and I don't know why.
+
+I thought 100 bases might just be too long, so I tried shorter motifs in shorter sequences too. I also trained the same actor network directly on the true motif mask, to make sure it can represent the answer at all:
+
+| Motif | Sequence length | INVASE | Same actor, supervised |
+| --- | ---: | ---: | ---: |
+| `AA` | 40 | 0.513 | 0.9998 |
+| `AAA` | 50 | 0.532 | 0.9977 |
+| `AAAAA` | 100 | 0.558 | 0.982 |
+
+So when the actor is told where the motif is, it learns the mask almost perfectly. Under INVASE it stays near chance.
+
+Then I wanted to know if the reward even carries any information about location. I trained a critic on random masks and froze it. With that critic, a five-position mask covering the motif gets a mean reward of +0.51, compared to −0.10 for five random positions. So the signal is there.
+
+My best guess is that the actor just can't turn that signal into a useful gradient. It makes 100 separate keep-or-drop choices and gets back one number for the whole mask, and covering the motif probably only pays off when all five positions are kept at once. It also starts out keeping about half of each sequence, so it hardly ever samples the sparse masks where location would matter.
+
+To test the exploration part, I started the actor off keeping 2% of positions and loosened that over training (λ = 0.3, reward averaged over 8 masks per step). AUROC went from 0.52 to 0.61 in that run. That's the highest I've seen, but it's one run. Averaging over 8 masks without the sparse start gave 0.44 to 0.52 across the settings I tried.
+
+## Next
+
+- In-silico mutagenesis: mutate each base and see how much the CNN's output moves. I have the code, but the comparison script crashed on a dtype error before writing anything out.
+- A decoy motif that's correlated with the label but doesn't cause it, to see if INVASE can tell them apart.
+- Check, sequence by sequence, whether adding one motif position to a mask raises the reward. My first attempt averaged over sequences, which washes out any effect because the motif is somewhere different every time.
+- Five seeds for everything.

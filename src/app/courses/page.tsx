@@ -11,9 +11,13 @@ const courses = {
     princeton: [
         { code: "COS 217", name: "Systems Programming" },
         { code: "COS 226", name: "Data Structures and Algorithms" },
-        { code: "COS 486", name: "Introduction to Neural Emulation" },
+        { code: "COS 375", name: "Computer Architecture and Organization" },
+        { code: "COS 418", name: "Distributed Systems" },
+        { code: "COS 445", name: "Economics and Computing" },
+        { code: "ECE 445", name: "Solid-State Electronic Devices" },
         { code: "MAT 216", name: "Multivariable Analysis and Linear Algebra I" },
         { code: "MAT 218", name: "Multivariable Analysis and Linear Algebra II" },
+        { code: "MAT 385", name: "Probability Theory" },
     ],
     other: [
         { code: "--", name: "Measure Theory", links: [{ href: "/mt-paper.pdf", text: "paper" }, { href: "/mt-slides.pdf", text: "slides" }] },

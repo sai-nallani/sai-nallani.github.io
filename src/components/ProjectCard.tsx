@@ -18,7 +18,7 @@ interface ProjectCardProps {
 
 export default function ProjectCard({ project }: ProjectCardProps) {
     const hasPage = project.sections && project.sections.length > 0;
-    const href = hasPage ? `/portfolio/${project.slug}` : project.links.live;
+    const href = hasPage ? `/portfolio/${project.slug}` : project.links.live ?? project.links.github;
     const isExternal = !hasPage;
 
     const content = (
@@ -31,7 +31,7 @@ export default function ProjectCard({ project }: ProjectCardProps) {
                 ))}
             </div>
             <span className="project-link">
-                {isExternal ? "Visit Site →" : "View Project →"}
+                {hasPage ? "View Project →" : project.links.live ? "Visit Site →" : "View on GitHub →"}
             </span>
         </>
     );

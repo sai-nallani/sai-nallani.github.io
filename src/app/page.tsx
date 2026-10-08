@@ -41,7 +41,7 @@ export default function Home() {
           <span className={styles.eyebrow}>Princeton University · CS &amp; Math</span>
           <h1 className={styles.name}>Sai Nallani</h1>
           <p className={styles.bio}>
-            I&apos;m a Freshman at Princeton University, majoring in CS and Math.
+            I&apos;m a CS/Math major at Princeton University.
             I&apos;m interested in optimization, interpretability, robotics, and
             reinforcement learning.
           </p>
@@ -95,7 +95,7 @@ export default function Home() {
                   </Link>
                 ) : (
                   <a
-                    href={project.links.live}
+                    href={project.links.live ?? project.links.github}
                     target="_blank"
                     rel="noopener noreferrer"
                     className={styles.row}

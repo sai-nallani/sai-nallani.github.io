@@ -1,0 +1,187 @@
+---
+title: "Neural Networks Made of Planets and Puddles"
+date: "2026-10-05"
+---
+
+Unconventional AI's [Un-0](https://unconv.ai/blog/introducing-un-0-generating-images-with-coupled-oscillators/) is an image model that doesn't have layers in the usual sense. It's built from thousands of phase oscillators that follow the Kuramoto equation,
+
+$$
+\frac{d\theta_i}{dt} = \omega_i + \sum_j K_{ij} \sin(\theta_j - \theta_i),
+$$
+
+where $\theta_i$ is oscillator $i$'s phase, $\omega_i$ its natural frequency, and $K_{ij}$ how hard oscillator $j$ pulls on it. Both $\omega$ and $K$ are learned. To make an image, Un-0 starts the phases at random, lets them evolve for a fixed time, and passes the final phases to a small decoder. A [follow-up](https://unconv.ai/blog/less-is-more-scaling-dynamics-with-sparsity/) found that removing most of the $N^2$ entries of $K$, either at random or by splitting the oscillators into modules, improved the results.
+
+I wanted to look at two other systems the same way: gravity (mostly as a joke) and a tray of water, which I'd actually like to try.
+
+## Dynamics as a network
+
+In Un-0 and in both systems below, a state $x(t)$ evolves under a vector field with parameters $w$:
+
+$$
+\dot x = f(x; w), \qquad x(0) = E(u), \qquad y = R\big(x(T)\big).
+$$
+
+The input $u$ sets the starting state through an encoder $E$, and a readout $R$ turns the final state into the output $y$. Taking Euler steps of size $\Delta t$ gives $x_{k+1} = x_k + \Delta t\, f(x_k; w)$, which is a residual network with $T/\Delta t$ layers that all share the weights $w$. This is a [neural ODE](https://arxiv.org/abs/1806.07366), and its gradients come from the adjoint method. You run a second system backward from $t = T$,
+
+$$
+\dot a = -\left(\frac{\partial f}{\partial x}\right)^{\!\top} a, \qquad a(T) = \frac{\partial L}{\partial x(T)}, \qquad \frac{dL}{dw} = \int_0^T \left(\frac{\partial f}{\partial w}\right)^{\!\top} a \, dt,
+$$
+
+where $a(t) = \partial L / \partial x(t)$ says how sensitive the loss is to the state at time $t$. For Un-0, $x$ is the vector of phases, $f$ is the Kuramoto vector field, and $w = (\omega, K)$. Below I try to fill in the same pieces for gravity and for the tray, and to find where each one gets its nonlinearity.
+
+## Part 1: Gravity
+
+*For this section, assume we can place and weigh planets at will.*
+
+Take $N$ bodies with positions $\mathbf r_i$ and masses $m_i$. Newton's law of gravitation reads
+
+$$
+\ddot{\mathbf r}_i = \sum_{j \ne i} m_j \, \phi(\mathbf r_j - \mathbf r_i), \qquad \phi(\mathbf d) = \frac{G\,\mathbf d}{\lVert \mathbf d \rVert^3}.
+$$
+
+The right-hand side looks like a neuron, since each body's acceleration is a weighted sum of a fixed nonlinearity $\phi$, with the masses as weights. Body $i$'s own mass cancels out (the equivalence principle), so the weight on the edge from $j$ to $i$ is just $m_j$. The weight matrix is therefore $W = \mathbf 1 \mathbf m^\top$, which has rank one and all positive entries. Since there's no negative mass, no body can inhibit another, which rules out a lot of useful networks.
+
+| Neural network | Gravitational network |
+| --- | --- |
+| Input $u$ | Starting positions and velocities of a few input planets |
+| State $x$ | Every position and velocity, $6N$ numbers |
+| Weights $w$ | The masses $m_j$ |
+| Bias | The Sun, which holds 99.86% of the solar system's mass and pulls hard on every planet |
+| Activation | $\phi(\mathbf d) = G\mathbf d / \lVert \mathbf d \rVert^3$ |
+| Depth | Time |
+| Readout $R$ | Where the output moons are at time $T$ |
+| Dead neuron | Collision |
+| Weight tying | Merger |
+
+The adjoint method needs the trajectory $x(t)$ on the way back. Newtonian gravity is time-reversible, so instead of storing the trajectory you can recover it by running the planets backward.
+
+But the solar system is chaotic, and nearby trajectories separate as $\lVert \delta x(t) \rVert \approx e^{\lambda t} \lVert \delta x(0) \rVert$, with a Lyapunov time $1/\lambda$ of about 5 million years (Laskar, 1989). The adjoint grows at the same rate going backward. Over the solar system's 4.5-billion-year history, that's
+
+$$
+e^{\lambda T} = e^{4.5\,\text{Gyr} / 5\,\text{Myr}} = e^{900} \approx 10^{391},
+$$
+
+so backpropagating through it takes about 390 more digits of precision than you started with. The gradients explode because of the sensitivity to initial conditions, which is also why long-range orbit prediction is hard.
+
+Some other notes:
+
+- The Milky Way has 100 to 400 billion stars, about the parameter count of GPT-3 (175 billion) and roughly ten million times as many oscillators as the largest Un-0 (16,384). It's also about 13 billion years old, if you want to count that as training time.
+- One forward pass of the solar system, counting one orbit of Neptune, takes 165 years.
+- You can't prune $W = \mathbf 1 \mathbf m^\top$. From far away, though, a star cluster pulls almost like a single point mass at its center, which is why Barnes–Hut simulations take $O(N \log N)$ time instead of $O(N^2)$. That gives dense coupling inside each cluster and one summed mass between clusters, which is close to the modular sparsity Un-0's follow-up found useful.
+- Gravity phase-locks oscillators too, though not at 1:1 like Kuramoto oscillators. Io, Europa and Ganymede orbit Jupiter at periods in a 1:2:4 ratio, and Neptune and Pluto are locked at 3:2.
+- Each training step moves a planet, so the learning rate is measured in Jupiter masses per epoch. Changing Jupiter's orbital energy by 1% takes about $1.6 \times 10^{33}$ joules, roughly 2.6 trillion years of humanity's current energy use.
+
+## Part 2: A tray of water
+
+Take a square tray of water, $L = 30$ cm on a side and just as deep. Drop objects into it at fixed points. Every object is the same cylinder, 3 cm across and 5 cm tall, but each has a different mass. Mark a grid on the still surface and record how each grid point moves up and down, which gives the output for that set of masses.
+
+| Neural network | Water tray |
+| --- | --- |
+| Input $u$ | The masses of the dropped objects |
+| State $x$ | Amplitudes of the tray's standing waves, plus each float's height and velocity |
+| Weights $w$ | The tray's shape, plus the masses and positions of any floats placed in it |
+| Activation | Impact physics, sinking or floating, and float coupling (all below) |
+| Readout $R$ | Surface heights at the grid points at a few chosen times |
+
+### The linear part
+
+Small surface waves on water of depth $h$ obey the dispersion relation
+
+$$
+\omega^2 = \left(g k + \frac{\sigma}{\rho} k^3\right) \tanh(k h),
+$$
+
+where $k = 2\pi/\lambda$ is the wavenumber, $g$ is gravity, $\sigma$ is surface tension and $\rho$ is density. The tray is as deep as it is wide, so every wave that fits in it has $kh \ge \pi$. That puts $\tanh(kh)$ within half a percent of 1, so the depth barely matters. Gravity mostly sets the speed of waves longer than $2\pi\sqrt{\sigma/\rho g} \approx 1.7$ cm, and surface tension the speed of shorter ones. Different wavelengths travel at different speeds, so a splash spreads into rings with the long waves out in front. A 5 cm wave oscillates at 5.9 Hz, and its energy moves at the group velocity $d\omega/dk \approx 18$ cm/s, so it crosses the tray in under two seconds.
+
+The walls reflect the waves, so the surface height $\eta$ is a sum of the tray's standing modes,
+
+$$
+\eta(\mathbf x, t) = \sum_{m,n} a_{mn}(t)\, \psi_{mn}(\mathbf x), \qquad \psi_{mn}(x, y) \propto \cos\frac{m\pi x}{L} \cos\frac{n\pi y}{L},
+$$
+
+normalized so that $\int \psi_{mn}^2 \, dA = 1$, with $k_{mn} = \frac{\pi}{L}\sqrt{m^2 + n^2}$. If a pressure $p(\mathbf x, t)$ pushes on the surface, linear potential flow gives each mode its own damped oscillator,
+
+$$
+\ddot a_{mn} + 2\gamma_{mn} \dot a_{mn} + \omega_{mn}^2 a_{mn} = -\frac{k_{mn} \tanh(k_{mn} h)}{\rho} \int p \, \psi_{mn} \, dA,
+$$
+
+where viscosity sets the damping at $\gamma_{mn} = 2\nu k_{mn}^2$, with $\nu$ the kinematic viscosity. That's slow for long waves (a 5 cm wave takes about 30 s to shrink by a factor of $e$) and fast for short ones (about 4 s at 1.7 cm).
+
+Every term is linear, so the bare tray is a single linear layer. Its kernel is the tray's Green's function, which you get by solving each oscillator for an impulse:
+
+$$
+G(\mathbf x, \mathbf x', t) = -\sum_{m,n} \frac{k_{mn} \tanh(k_{mn} h)}{\rho\, \Omega_{mn}}\, e^{-\gamma_{mn} t} \sin(\Omega_{mn} t)\; \psi_{mn}(\mathbf x)\, \psi_{mn}(\mathbf x'), \qquad \Omega_{mn} = \sqrt{\omega_{mn}^2 - \gamma_{mn}^2}.
+$$
+
+The surface is $\eta = G * p$, convolved over space and time. With only a linear readout on top, the whole map would still be linear, so any nonlinearity has to come from the objects themselves.
+
+### The nonlinear part
+
+**Impact.** Model a drop as leaving a crater, $\eta_0 = -D\, e^{-r^2/s^2}$, that the water then fills back in. The crater's potential energy is
+
+$$
+U = \frac{\rho g}{2} \int \eta_0^2 \, dA = \frac{\pi}{4} \rho g D^2 s^2.
+$$
+
+The crater's width $s$ is set by the object, which is the same for every object. If a fixed fraction $\varepsilon$ of the impact energy $mgH$ goes into the crater, then
+
+$$
+\frac{\pi}{4} \rho g D^2 s^2 = \varepsilon\, m g H \quad\Longrightarrow\quad D = \sqrt{\frac{4 \varepsilon H}{\pi \rho s^2}}\, \sqrt{m}.
+$$
+
+So the crater depth goes as the square root of the mass, and I'll count that square root as an activation function.
+
+**Sinking.** An object heavier than the water it displaces, $\rho V \approx 35$ g here, sinks after its one splash. A lighter one stays on the surface, so whether an object floats is a step function of its mass.
+
+**Floating.** A float's restoring force is $\rho g A$ per unit of depth, where $A$ is its cross-section. Every object has the same shape, so mass alone sets the bobbing frequency:
+
+$$
+\omega_{\text{bob}} = \sqrt{\frac{\rho g A}{m + m_a}}.
+$$
+
+Here $m_a$ is the added mass, the water that has to move along with the float. For a float of radius $a = 1.5$ cm it's about $\frac{4}{3}\rho a^3 \approx 4.5$ g. From 10 g to 30 g, floats bob at about 3.5 Hz down to 2.3 Hz.
+
+Each float makes waves, and the waves push on every other float, so you get oscillators with different natural frequencies coupled through a shared medium, which is roughly the Kuramoto setup.
+
+Kuramoto oscillators sustain themselves, but a float loses its energy to the waves it makes, so I give each float a drive term that pumps energy in when its amplitude is below a target $A_0$ and takes energy out above it:
+
+$$
+m \ddot z = -\kappa\,(z - \bar\eta) + \mu\, m \left(1 - \frac{z^2 + \dot z^2 / \omega_0^2}{A_0^2}\right) \dot z.
+$$
+
+Here $z$ is the float's height and $\bar\eta$ is the surface height averaged over its footprint. The constant $\omega_0$ is the float's formula frequency $\omega_{\text{bob}}$, used to estimate its amplitude. The spring constant $\kappa$ is chosen so that the float and the surface under it together have stiffness $\rho g A$; the water's inertia then provides the added mass. The float pushes back on the water with the opposite force, so the coupling runs both ways. With the drive on, each float becomes a limit cycle, which is what Kuramoto's derivation assumes.
+
+The coupling is also delayed, since waves take time to travel. When weakly coupled limit cycles are reduced to their phases, a delay becomes a phase lag $\alpha_{ij}$. The result is the Kuramoto–Sakaguchi model:
+
+$$
+\frac{d\theta_i}{dt} = \omega_i + \sum_j K_{ij} \sin(\theta_j - \theta_i - \alpha_{ij}).
+$$
+
+The strength $K_{ij}$ and lag $\alpha_{ij}$ are the magnitude and phase of the tray's response at float $i$ to forcing at float $j$ at the bobbing frequency (the time Fourier transform of $G$), up to a factor that's the same for every pair. Unlike in Un-0, $K$ isn't a free matrix here. You only choose the positions, and $G$ sets every $K_{ij}$ and $\alpha_{ij}$ from them.
+
+### Simulation
+
+The simulation below integrates these equations: 1,600 modes of a 30 cm tray, 30 cm deep, with floats coupled through $\bar\eta$. Each mode advances by its exact damped solution, and the float forces are applied as half-step kicks. With damping set to zero apart from viscosity, the total energy decays smoothly, with no numerical drift. Impact craters are kept shallow, since linear theory needs gentle slopes.
+
+{{wave-tray}}
+
+*Click the water to drop an object of the selected mass. Heavy objects sink and leave rings. Light ones stay and bob, and their frequencies, averaged over 3 s, appear in the plot. The dots are the readout grid, each lifted on screen in proportion to the water's height at that point. The two presets place the same three floats (20, 22 and 24 g) 6 cm apart, with the drive on and random starting phases.*
+
+Some things I found while running it:
+
+- With walls that reflect perfectly, the tray acts as a resonator and its modes pull on each float, so a float's frequency depends on where it sits as well as on its mass. The same 12 g float bobs at 3.10 Hz in the middle and 2.85 Hz off to one side. So in the simulation I add $0.6\ \text{s}^{-1}$ to every $\gamma_{mn}$ as a rough stand-in for walls that absorb waves. With that, floats bob within about 10% of $\omega_{\text{bob}}$, above or below depending on position.
+- With the floats 6 cm apart, a 20 g and a 22 g float (2.59 and 2.54 Hz alone) lock in about 9 s. A 20 g and a 24 g float (2.59 and 2.48 Hz) lock in 15 to 20 s. At 10 cm apart, a 20 g and a 23 g float never lock. Distance sets $K_{ij}$, so this is the Kuramoto transition, where oscillators lock once their coupling outweighs the difference in their frequencies.
+- Locked neighbors settle 145° to 160° apart instead of in phase. The lag $\alpha_{ij}$ at this spacing favors near-opposition. My guess is that two floats moving opposite each other radiate less and so lose less energy. Huygens noticed something similar in 1665, when two pendulum clocks hanging from one beam ended up swinging opposite each other.
+- Three floats in a line lock within about 10 s, with neighbors nearly opposite. When I put the same three floats on a triangle, they didn't settle in any of four runs. Each pair wants to be nearly opposite, but three phases can't all be opposite one another, so the triangle is frustrated, like an antiferromagnet on a triangular lattice.
+
+### Training it
+
+The simplest version treats the tray as a reservoir, where the dynamics are fixed and only the readout is trained. Stack the grid heights at a few chosen times into a feature vector $\Phi(u)$ for each input. Collect those vectors as the columns of a matrix $\Phi$, and the targets as the columns of $Y$. A linear readout $\hat y = W\Phi(u)$ is then fit by ridge regression:
+
+$$
+W = Y \Phi^\top \left(\Phi \Phi^\top + \lambda I\right)^{-1}.
+$$
+
+Fernando and Sojakka did this with a real bucket of water in *Pattern Recognition in a Bucket* (2003), solving XOR and a small speech task. The baseline I'd compare against is the same readout fit directly to the raw masses, because if the water's features don't do better than that, the tray isn't adding anything.
+
+Un-0 found that trained dynamics beat a frozen reservoir, so the better version also trains $w$: the masses and positions of driven floats, which set $\omega_i$ and, through $G$, $K_{ij}$. The modal model is a neural ODE, so the adjoint method from the start of this post gives $dL/dw$. The tray is damped, so the adjoint shrinks by about $e^{-\gamma T}$ going backward, and I'd expect vanishing gradients rather than the exploding ones from gravity.

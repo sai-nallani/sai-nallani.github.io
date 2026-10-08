@@ -5,6 +5,25 @@ import type { Metadata } from "next";
 import fs from "fs";
 import path from "path";
 import { parseMarkdown } from "@/lib/markdown";
+import "katex/dist/katex.min.css";
+import WaveTraySim from "@/components/WaveTraySim";
+
+// Interactive pieces a post can place on a line of its own, as {{name}}
+const embeds: Record<string, () => React.ReactElement> = {
+    "wave-tray": () => <WaveTraySim />,
+};
+
+function renderContent(content: string) {
+    return content.split(/^\{\{([\w-]+)\}\}$/m).map((part, i) => {
+        if (i % 2 === 0) {
+            return part.trim()
+                ? <div key={i} dangerouslySetInnerHTML={{ __html: parseMarkdown(part) }} />
+                : null;
+        }
+        const Embed = embeds[part];
+        return Embed ? <Embed key={i} /> : null;
+    });
+}
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -84,7 +103,7 @@ export default async function BlogPost({ params }: Props) {
                     )}
 
                     {content ? (
-                        <div dangerouslySetInnerHTML={{ __html: parseMarkdown(content) }} />
+                        renderContent(content)
                     ) : (
                         <p>Content coming soon...</p>
                     )}

@@ -1,6 +1,20 @@
 {
     "posts": [
         {
+            "slug": "invase-dna-motifs",
+            "title": "INVASE on a Toy DNA Task",
+            "date": "2026-10-05",
+            "kind": "Notes",
+            "excerpt": "Early, mostly single-run notes on whether INVASE can find a DNA motif it was never shown. So far it sits at chance."
+        },
+        {
+            "slug": "planets-and-puddles",
+            "title": "Neural Networks Made of Planets and Puddles",
+            "date": "2026-10-05",
+            "kind": "Idea",
+            "excerpt": "Reading physical systems as neural ODEs: a gravitational network (a joke) and a tray of water whose floats act as Kuramoto oscillators, with the math and an interactive simulation."
+        },
+        {
             "slug": "se3-canonicalization",
             "title": "Gripper-Frame Canonicalization on LIBERO",
             "date": "2026-10-05",
