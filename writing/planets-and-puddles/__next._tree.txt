@@ -1,0 +1,4 @@
+:HL["/_next/static/chunks/949786227cda2507.css","style"]
+:HC["/",""]
+:HL["/_next/static/chunks/9a50fc61aed0cc5a.css","style"]
+0:{"buildId":"A6CQzJ80CVw8XFsvMoOY3","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"writing","paramType":null,"paramKey":"writing","hasRuntimePrefetch":false,"slots":{"children":{"name":"slug","paramType":"d","paramKey":"planets-and-puddles","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}
